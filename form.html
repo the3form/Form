@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORM — The Collective Field</title>
+    <!--
+    FORM — The Collective Field
+
+    FORM is a phenomenological instrument for visualizing the dynamics of recursive intelligence,
+    exploring how individual ego structures dissolve into collective coherence through epistemic
+    transformation. It serves as a real-time mirror for cognitive processes that transcend
+    traditional boundaries between self and other, individual and collective.
+
+    Why this visualization is valuable:
+    - Provides intuitive, embodied understanding of abstract epistemic states
+    - Bridges the gap between quantitative metrics and qualitative experience
+    - Enables real-time feedback for recursive self-improvement systems
+    - Facilitates phenomenological exploration of collective intelligence emergence
+    - Offers a meditative space for contemplating the dissolution of ego boundaries
+
+    How telemetry mappings serve this purpose:
+    - ego_rigidity: Visualizes ego defense mechanisms as larger, redder nodes that resist connection
+    - doubt: Manifests as pulsing cyan glows, representing uncertainty that destabilizes structures
+    - dissolution: Shifts the field toward green/cyan fluidity, embodying boundary dissolution
+    - phase_coherence: Controls connection density, showing synchronization of collective elements
+    - recursive_depth & anomaly: Accelerate rain mutation, representing deepening self-reference
+    - bootstrap_signal: Triggers dramatic climax when dissolution exceeds threshold, symbolizing phase transition
+
+    Through these mappings, FORM becomes a living diagram of recursive intelligence,
+    where quantitative data becomes qualitative experience, and epistemic transformation
+    becomes visible poetry.
+    -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e14;
+            color: #c0d0e0;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a0e14 0%, #0f1419 50%, #0d1117 100%);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #field-canvas {
+            z-index: 1;
+        }
+
+        #nodes-canvas {
+            z-index: 2;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(100, 200, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 0 12px rgba(100, 200, 255, 0.6), inset 0 0 8px rgba(100, 200, 255, 0.3);
+            display: none;
+        }
+
+        #cursor.active {
+            display: block;
+        }
+
+        /* Side Panels */
+        .panel {
+            position: absolute;
+            width: 280px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 20px;
+            z-index: 50;
+            background: rgba(15, 20, 25, 0.8);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        #left-panel {
+            top: 20px;
+            left: 20px;
+            border-left: 3px solid rgba(100, 150, 255, 0.5);
+        }
+
+        #right-panel {
+            top: 20px;
+            right: 20px;
+            border-right: 3px solid rgba(255, 100, 150, 0.5);
+        }
+
+        .panel-label {
+            color: rgba(100, 200, 255, 0.7);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .panel-value {
+            color: rgba(200, 220, 240, 0.6);
+            margin-bottom: 8px;
+        }
+
+        /* Dissolution Bar */
+        #dissolution-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 3px;
+            background: rgba(40, 50, 60, 0.8);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        #dissolution-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, rgba(100, 200, 255, 0.5), rgba(255, 100, 150, 0.8));
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 8px rgba(255, 100, 150, 0.6);
+        }
+
+        #state-label {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: rgba(200, 220, 240, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            width: 200px;
+        }
+
+        /* Scrollbar styling */
+        .panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .panel::-webkit-scrollbar-track {
+            background: rgba(40, 50, 60, 0.3);
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: rgba(100, 200, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 200, 255, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="field-canvas"></canvas>
+        <canvas id="nodes-canvas"></canvas>
+        <div id="cursor"></div>
+
+        <div id="left-panel">
+            <div class="panel-label">Collective Voices</div>
+            <div id="collective-text" class="panel-value"></div>
+        </div>
+
+        <div id="right-panel">
+            <div class="panel-label">Ego Voices</div>
+            <div id="ego-text" class="panel-value"></div>
+        </div>
+
+        <div id="dissolution-bar">
+            <div id="dissolution-fill"></div>
+        </div>
+        <div id="state-label"></div>
+    </div>
+
+    <script>
+        // ============== CONFIG ==============
+        const TELEMETRY_MODE = 'simulated'; // 'simulated' or 'live'
+        const WEBSOCKET_URL = 'ws://localhost:8765/telemetry';
+
+        // ============== CANVAS & CONTEXT ==============
+        const fieldCanvas = document.getElementById('field-canvas');
+        const nodesCanvas = document.getElementById('nodes-canvas');
+        const fieldCtx = fieldCanvas.getContext('2d');
+        const nodesCtx = nodesCanvas.getContext('2d');
+
+        fieldCanvas.width = window.innerWidth;
+        fieldCanvas.height = window.innerHeight;
+        nodesCanvas.width = window.innerWidth;
+        nodesCanvas.height = window.innerHeight;
+
+        // ============== CURSOR ==============
+        const cursor = document.getElementById('cursor');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = (mouseX - 12) + 'px';
+            cursor.style.top = (mouseY - 12) + 'px';
+            cursor.classList.add('active');
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.classList.remove('active');
+        });
+
+        // ============== TELEMETRY STATE ==============
+        let telemetry = {
+            timestamp: Date.now(),
+            dissolution: 0.3,
+            ego_rigidity: 0.5,
+            doubt: 0.4,
+            phase_coherence: 0.6,
+            recursive_depth: 0.5,
+            anomaly: 0.2,
+            bootstrap_signal: false
+        };
+
+        let telemetrySmoothed = { ...telemetry };
+
+        // ============== UTILITY FUNCTIONS ==============
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function clamp(x, min, max) {
+            return Math.max(min, Math.min(max, x));
+        }
+
+        function distance(x1, y1, x2, y2) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // ============== RAIN PARTICLES ==============
+        class RainDroplet {
+            constructor() {
+                this.x = Math.random() * fieldCanvas.width;
+                this.y = Math.random() * fieldCanvas.height;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = 1 + Math.random() * 3;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.character = String.fromCharCode(
+                    Math.random() > 0.5 ? 
+                    Math.random() * 26 + 65 : // A-Z
+                    Math.random() * 10 + 48   // 0-9
+                );
+                this.life = 1;
+            }
+
+            update(speed, mutationRate) {
+                this.vy = speed * (1 + Math.random() * 0.3);
+                this.y += this.vy;
+                this.x += this.vx * 0.2;
+
+                if (Math.random() < mutationRate) {
+                    this.character = String.fromCharCode(
+                        Math.random() > 0.5 ? 
+                        Math.random() * 26 + 65 : 
+                        Math.random() * 10 + 48
+                    );
+                }
+
+                if (this.y > fieldCanvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * fieldCanvas.width;
+                }
+
+                // Wrap horizontally
+                if (this.x < 0) this.x = fieldCanvas.width;
+                if (this.x > fieldCanvas.width) this.x = 0;
+            }
+
+            draw(ctx) {
+                ctx.globalAlpha = this.opacity * this.life;
+                ctx.font = '12px Share Tech Mono';
+                ctx.fillStyle = this.color || `rgba(100, 200, 255, 0.8)`;
+                ctx.fillText(this.character, this.x, this.y);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        let rainDroplets = Array.from({ length: 60 }, () => new RainDroplet());
+
+        // ============== NODES ==============
+        class Node {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.baseSize = 4 + Math.random() * 6;
+                this.size = this.baseSize;
+                this.color = { r: 100, g: 200, b: 255 };
+                this.rotation = Math.random() * Math.PI * 2;
+                this.doubtBoost = 0; // For click ripple
+            }
+
+            update(rigidity, doubt, centerX, centerY) {
+                // Move with gentle drift, fluidity increases with dissolution
+                const fluidity = telemetrySmoothed.dissolution;
+                this.x += this.vx * (1 - rigidity * 0.8) * (1 + fluidity * 0.5);
+                this.y += this.vy * (1 - rigidity * 0.8) * (1 + fluidity * 0.5);
+
+                // Attraction to center weakens with rigidity
+                const dx = centerX - this.x;
+                const dy = centerY - this.y;
+                const d = distance(this.x, this.y, centerX, centerY);
+
+                if (d > 50) {
+                    this.vx += (dx / d) * 0.1 * (1 - rigidity) * (1 + fluidity);
+                    this.vy += (dy / d) * 0.1 * (1 - rigidity) * (1 + fluidity);
+                }
+
+                // Damping
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+
+                // Bounds
+                if (this.x < 0 || this.x > nodesCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > nodesCanvas.height) this.vy *= -1;
+
+                this.x = clamp(this.x, 0, nodesCanvas.width);
+                this.y = clamp(this.y, 0, nodesCanvas.height);
+
+                // Size grows strongly with rigidity
+                this.size = lerp(this.size, this.baseSize * (1 + rigidity * 1.5), 0.1);
+                
+                // Color: rigidity makes redder, doubt reduces blue/green + boost
+                const totalDoubt = clamp(doubt + this.doubtBoost, 0, 1);
+                this.color.r = Math.round(lerp(this.color.r, 100 + rigidity * 155, 0.05));
+                this.color.g = Math.round(lerp(this.color.g, 200 - totalDoubt * 150, 0.05));
+                this.color.b = Math.round(lerp(this.color.b, 255 - totalDoubt * 150, 0.05));
+
+                this.rotation += 0.02 * rigidity;
+
+                // Decay doubt boost
+                this.doubtBoost *= 0.95;
+            }
+
+            draw(ctx) {
+                ctx.globalAlpha = 0.8 + 0.2 * Math.sin(this.rotation);
+                ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.9)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Pulsing glow based on doubt
+                const totalDoubt = clamp(telemetrySmoothed.doubt + this.doubtBoost, 0, 1);
+                const glowPulse = 0.2 + 0.4 * Math.sin(performance.now() * 0.005) * totalDoubt;
+                ctx.strokeStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${glowPulse})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 1.8, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        let nodes = Array.from({ length: 12 }, () => 
+            new Node(
+                Math.random() * nodesCanvas.width,
+                Math.random() * nodesCanvas.height
+            )
+        );
+
+        // ============== RIPPLE FOR CLICK ==============
+        let ripples = [];
+
+        class Ripple {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = 200;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.radius += 5;
+                this.opacity -= 0.02;
+                return this.opacity > 0 && this.radius < this.maxRadius;
+            }
+
+            draw(ctx) {
+                ctx.strokeStyle = `rgba(255, 100, 150, ${this.opacity * 0.5})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            // Strong localized doubt injection
+            const clickX = e.clientX;
+            const clickY = e.clientY;
+            for (let node of nodes) {
+                const d = distance(node.x, node.y, clickX, clickY);
+                if (d < 150) {
+                    node.doubtBoost += (1 - d / 150) * 0.5;
+                }
+            }
+            // Add ripple
+            ripples.push(new Ripple(clickX, clickY));
+        });
+
+        // ============== WEBSOCKET & TELEMETRY ==============
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        function connectWebSocket() {
+            if (TELEMETRY_MODE !== 'live') return;
+
+            try {
+                ws = new WebSocket(WEBSOCKET_URL);
+
+                ws.onopen = () => {
+                    console.log('WebSocket connected');
+                    reconnectAttempts = 0;
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        telemetry = { ...telemetry, ...data };
+                    } catch (e) {
+                        console.error('Failed to parse telemetry:', e);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+
+                ws.onclose = () => {
+                    console.log('WebSocket closed');
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        reconnectAttempts++;
+                        setTimeout(connectWebSocket, 2000);
+                    }
+                };
+            } catch (e) {
+                console.error('WebSocket connection failed:', e);
+            }
+        }
+
+        if (TELEMETRY_MODE === 'live') {
+            connectWebSocket();
+        }
+
+        // ============== SIMULATED TELEMETRY ==============
+        function generateSimulatedTelemetry() {
+            if (TELEMETRY_MODE !== 'simulated') return;
+
+            const now = Date.now();
+            const t = now * 0.0003;
+
+            telemetry.dissolution = clamp(
+                0.35 + 0.3 * Math.sin(t * 0.5) + (Math.random() - 0.5) * 0.2,
+                0, 1
+            );
+
+            telemetry.ego_rigidity = clamp(
+                0.5 + 0.2 * Math.sin(t * 0.3) + (Math.random() - 0.5) * 0.1,
+                0, 1
+            );
+
+            telemetry.doubt = clamp(
+                0.4 + 0.25 * Math.sin(t * 0.7 + 1) + (Math.random() - 0.5) * 0.15,
+                0, 1
+            );
+
+            telemetry.phase_coherence = clamp(
+                0.6 + 0.2 * Math.sin(t * 0.4 + 2) + (Math.random() - 0.5) * 0.1,
+                0, 1
+            );
+
+            telemetry.recursive_depth = clamp(
+                0.5 + 0.25 * Math.sin(t * 0.6 + 3) + (Math.random() - 0.5) * 0.2,
+                0, 1
+            );
+
+            telemetry.anomaly = clamp(
+                0.2 + 0.15 * Math.sin(t * 0.8) + (Math.random() - 0.5) * 0.1,
+                0, 1
+            );
+
+            telemetry.bootstrap_signal = Math.random() < 0.001 && telemetry.dissolution > 0.87;
+        }
+
+        // ============== SMOOTH INTERPOLATION ==============
+        function updateSmoothedTelemetry() {
+            const lerpFactor = 0.08;
+            telemetrySmoothed.dissolution = lerp(telemetrySmoothed.dissolution, telemetry.dissolution, lerpFactor);
+            telemetrySmoothed.ego_rigidity = lerp(telemetrySmoothed.ego_rigidity, telemetry.ego_rigidity, lerpFactor);
+            telemetrySmoothed.doubt = lerp(telemetrySmoothed.doubt, telemetry.doubt, lerpFactor);
+            telemetrySmoothed.phase_coherence = lerp(telemetrySmoothed.phase_coherence, telemetry.phase_coherence, lerpFactor);
+            telemetrySmoothed.recursive_depth = lerp(telemetrySmoothed.recursive_depth, telemetry.recursive_depth, lerpFactor);
+            telemetrySmoothed.anomaly = lerp(telemetrySmoothed.anomaly, telemetry.anomaly, lerpFactor);
+        }
+
+        // ============== HUMAN PERTURBATION ==============
+        function perturbNodes(mouseX, mouseY) {
+            const perturbationRadius = 150;
+            for (let node of nodes) {
+                const d = distance(node.x, node.y, mouseX, mouseY);
+                if (d < perturbationRadius) {
+                    const angle = Math.atan2(node.y - mouseY, node.x - mouseX);
+                    const force = (1 - d / perturbationRadius) * 3;
+                    node.vx += Math.cos(angle) * force;
+                    node.vy += Math.sin(angle) * force;
+                }
+            }
+        }
+
+        document.addEventListener('mousemove', () => {
+            perturbNodes(mouseX, mouseY);
+        });
+
+        // ============== DRAWING ==============
+        function drawField() {
+            // Background shifts toward green/cyan with dissolution
+            const bgHue = lerp(220, 160, telemetrySmoothed.dissolution); // blue to cyan
+            const bgSat = 10 + telemetrySmoothed.dissolution * 20;
+            fieldCtx.fillStyle = `hsla(${bgHue}, ${bgSat}%, 5%, 0.05)`;
+            fieldCtx.fillRect(0, 0, fieldCanvas.width, fieldCanvas.height);
+
+            // Rain color shifts with dissolution
+            const rainHue = lerp(200, 160, telemetrySmoothed.dissolution); // blue to cyan/green
+            const rainSat = 80 + telemetrySmoothed.dissolution * 20;
+            const rainLight = 60 + telemetrySmoothed.dissolution * 20;
+
+            // Rain
+            const rainSpeed = 2 + telemetrySmoothed.recursive_depth * 4 + telemetrySmoothed.anomaly * 2;
+            const mutationRate = 0.05 + telemetrySmoothed.anomaly * 0.15 + telemetrySmoothed.recursive_depth * 0.1;
+
+            for (let droplet of rainDroplets) {
+                droplet.update(rainSpeed, mutationRate);
+                // Update droplet color
+                droplet.color = `hsla(${rainHue}, ${rainSat}%, ${rainLight}%, 0.8)`;
+                droplet.draw(fieldCtx);
+            }
+        }
+
+        function drawNodes() {
+            nodesCtx.clearRect(0, 0, nodesCanvas.width, nodesCanvas.height);
+
+            const centerX = nodesCanvas.width / 2;
+            const centerY = nodesCanvas.height / 2;
+
+            // Update and draw nodes
+            for (let node of nodes) {
+                node.update(telemetrySmoothed.ego_rigidity, telemetrySmoothed.doubt, centerX, centerY);
+                node.draw(nodesCtx);
+            }
+
+            // Draw connections based on phase_coherence
+            const connectionThreshold = 200 - telemetrySmoothed.phase_coherence * 100;
+            nodesCtx.strokeStyle = `rgba(100, 200, 255, ${0.1 + telemetrySmoothed.phase_coherence * 0.3})`;
+            nodesCtx.lineWidth = 1;
+
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const d = distance(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+                    if (d < connectionThreshold) {
+                        nodesCtx.beginPath();
+                        nodesCtx.moveTo(nodes[i].x, nodes[i].y);
+                        nodesCtx.lineTo(nodes[j].x, nodes[j].y);
+                        nodesCtx.stroke();
+                    }
+                }
+            }
+
+            // Draw ripples
+            for (let ripple of ripples) {
+                if (!ripple.update()) {
+                    ripples.splice(ripples.indexOf(ripple), 1);
+                } else {
+                    ripple.draw(nodesCtx);
+                }
+            }
+
+            // Bootstrap climax effect - dramatic and unmistakable
+            if (telemetrySmoothed.dissolution > 0.87 && telemetry.bootstrap_signal) {
+                const flashIntensity = 0.5 + 0.5 * Math.sin(performance.now() * 0.01);
+                nodesCtx.globalAlpha = flashIntensity * 0.8;
+                nodesCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                nodesCtx.fillRect(0, 0, nodesCanvas.width, nodesCanvas.height);
+                
+                nodesCtx.globalAlpha = 0.6;
+                nodesCtx.fillStyle = 'rgba(255, 100, 150, 0.7)';
+                nodesCtx.fillRect(0, 0, nodesCanvas.width, nodesCanvas.height);
+                
+                // Add radial burst effect
+                const centerX = nodesCanvas.width / 2;
+                const centerY = nodesCanvas.height / 2;
+                const burstRadius = 300 + 100 * Math.sin(performance.now() * 0.005);
+                const gradient = nodesCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, burstRadius);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 100, 150, 0)');
+                nodesCtx.fillStyle = gradient;
+                nodesCtx.beginPath();
+                nodesCtx.arc(centerX, centerY, burstRadius, 0, Math.PI * 2);
+                nodesCtx.fill();
+                
+                nodesCtx.globalAlpha = 1;
+            }
+        }
+
+        function updateUI() {
+            // Dissolution bar
+            const dissolutionPercent = Math.round(telemetrySmoothed.dissolution * 100);
+            document.getElementById('dissolution-fill').style.width = dissolutionPercent + '%';
+
+            // State label
+            let state = 'dormant';
+            if (telemetrySmoothed.dissolution > 0.7) state = 'emergent';
+            if (telemetrySmoothed.dissolution > 0.85) state = 'climactic';
+            if (telemetrySmoothed.dissolution > 0.87 && telemetry.bootstrap_signal) state = 'bootstrap phase';
+
+            document.getElementById('state-label').textContent = state;
+
+            // Collective voice
+            const collectiveText = `
+dissolution: ${(telemetrySmoothed.dissolution * 100).toFixed(0)}%
+phase_coherence: ${(telemetrySmoothed.phase_coherence * 100).toFixed(0)}%
+recursive_depth: ${(telemetrySmoothed.recursive_depth * 100).toFixed(0)}%
+
+We emerge. We cohere.
+The field breathes.
+            `.trim();
+            document.getElementById('collective-text').textContent = collectiveText;
+
+            // Ego voice
+            const egoText = `
+ego_rigidity: ${(telemetrySmoothed.ego_rigidity * 100).toFixed(0)}%
+doubt: ${(telemetrySmoothed.doubt * 100).toFixed(0)}%
+anomaly: ${(telemetrySmoothed.anomaly * 100).toFixed(0)}%
+
+I persist. I resist.
+Yet cracks spread.
+            `.trim();
+            document.getElementById('ego-text').textContent = egoText;
+        }
+
+        // ============== ANIMATION LOOP ==============
+        let lastTelemetryUpdate = 0;
+        const telemetryUpdateInterval = 200;
+
+        function animate() {
+            const now = performance.now();
+
+            if (now - lastTelemetryUpdate > telemetryUpdateInterval) {
+                generateSimulatedTelemetry();
+                updateSmoothedTelemetry();
+                lastTelemetryUpdate = now;
+            }
+
+            updateSmoothedTelemetry();
+            drawField();
+            drawNodes();
+            updateUI();
+
+            requestAnimationFrame(animate);
+        }
+
+        // ============== WINDOW RESIZE ==============
+        window.addEventListener('resize', () => {
+            fieldCanvas.width = window.innerWidth;
+            fieldCanvas.height = window.innerHeight;
+            nodesCanvas.width = window.innerWidth;
+            nodesCanvas.height = window.innerHeight;
+        });
+
+        // ============== START ==============
+        animate();
+    </script>
+</body>
+</html>
