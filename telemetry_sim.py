@@ -152,18 +152,21 @@ class TelemetrySimulator:
         self.clients = set()
 
     async def broadcast(self, message):
-        """Send message to all connected clients."""
-        if self.clients:
-            # Remove any dead connections
-            self.clients = {
-                client for client in self.clients if not client.is_closing()
-            }
-            if self.clients:
-                await asyncio.gather(
-                    *[client.send(json.dumps(message)) for client in self.clients],
-                    return_exceptions=True
-                )
+        if not self.clients:
+            return
 
+        dead = set()
+        payload = json.dumps(message)
+        results = await asyncio.gather(
+            *[client.send(payload) for client in self.clients],
+            return_exceptions=True
+        )
+
+        for client, result in zip(list(self.clients), results):
+            if isinstance(result, Exception):
+                dead.add(client)
+
+        self.clients -= dead
 
 
     async def telemetry_loop(self):
@@ -200,7 +203,7 @@ class TelemetrySimulator:
             print(f"[{datetime.now().isoformat()}] Telemetry loop cancelled")
             raise
 
-    async def handle_client(self, websocket, path):
+    async def handle_client(self, websocket):
         """Handle new client connection."""
         client_addr = websocket.remote_address
         self.clients.add(websocket)
