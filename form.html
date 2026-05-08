@@ -250,6 +250,7 @@
         };
 
         let telemetrySmoothed = { ...telemetry };
+        let bootstrapCooldown = 0;
 
         // ============== UTILITY FUNCTIONS ==============
         function lerp(a, b, t) {
@@ -531,7 +532,7 @@
             telemetrySmoothed.dissolution = lerp(telemetrySmoothed.dissolution, telemetry.dissolution, lerpFactor);
             telemetrySmoothed.ego_rigidity = lerp(telemetrySmoothed.ego_rigidity, telemetry.ego_rigidity, lerpFactor);
             telemetrySmoothed.doubt = lerp(telemetrySmoothed.doubt, telemetry.doubt, lerpFactor);
-            telemetrySmoothed.phase_coherence = lerp(telemetrySmoothed.phase_coherence, telemetry.phase_coherence, lerpFactor);
+            telemetrySmoothed.phase_coherence = lerp(telemetrySmoothed.phase_coherence, telemetry.phase_coherence, 0.15); // Faster lerp for coherence
             telemetrySmoothed.recursive_depth = lerp(telemetrySmoothed.recursive_depth, telemetry.recursive_depth, lerpFactor);
             telemetrySmoothed.anomaly = lerp(telemetrySmoothed.anomaly, telemetry.anomaly, lerpFactor);
         }
@@ -609,16 +610,18 @@
             }
 
             // Draw ripples
-            for (let ripple of ripples) {
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const ripple = ripples[i];
                 if (!ripple.update()) {
-                    ripples.splice(ripples.indexOf(ripple), 1);
+                    ripples.splice(i, 1);
                 } else {
                     ripple.draw(nodesCtx);
                 }
             }
 
             // Bootstrap climax effect - dramatic and unmistakable
-            if (telemetrySmoothed.dissolution > 0.87 && telemetry.bootstrap_signal) {
+            if (telemetrySmoothed.dissolution > 0.87 && telemetry.bootstrap_signal && bootstrapCooldown <= 0) {
+                bootstrapCooldown = 300; // 5 seconds at 60fps
                 const flashIntensity = 0.5 + 0.5 * Math.sin(performance.now() * 0.01);
                 nodesCtx.globalAlpha = flashIntensity * 0.8;
                 nodesCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
@@ -641,6 +644,10 @@
                 nodesCtx.fill();
                 
                 nodesCtx.globalAlpha = 1;
+            }
+
+            if (bootstrapCooldown > 0) {
+                bootstrapCooldown--;
             }
         }
 

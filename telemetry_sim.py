@@ -1,4 +1,3 @@
-what is worthy in this
 #!/usr/bin/env python3
 """
 FORM Telemetry Simulator
